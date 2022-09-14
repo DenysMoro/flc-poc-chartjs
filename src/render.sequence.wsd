@@ -1,0 +1,48 @@
+@startuml
+title FLC overview
+
+== Receive data ==
+activate Client
+activate Server
+Client -> Client: go to FLC page
+Client -> Server: request Weather, Insights by field, Plans, Crops, etc
+Client -> Client: show Loading Indicator
+Server -> Client: response Weather, Insights,  Threats, Plans, Crops, etc.
+Client -> Client: prepare data for render inside selector
+Client -> Client: render Charts with dates
+Client -> Client: search coordinates of points at chart that have Missions
+Client -> Client: align Missions and Timeline with correct dates
+Client -> Client: hide Loading Indicator and render the Page
+deactivate Server
+
+== Insight bubbles events ==
+Client -> Client: click on Insight bubble (at mission)
+Client -> Client: show Insight sidebar
+alt Insight sidebar actions
+    Client -> Client: Click Sample Image - opens Image modal view with tags as on Single Insight view
+    Client -> Client: "Open insight" - go to Insight single view page
+
+else close
+    Client -> Client: "Close" - hide Insight sidebar
+
+end
+
+== Chart events ==
+Client -> Client: click on Chart point - show Weather sidebar
+
+== Filter events ==
+Client -> Client: click on Filter button - show Filters sidebar
+
+alt Filters sidebar actions
+    Client -> Client: Select/unselect Filters - show/hide data on FLC page
+
+else close
+    Client -> Client: "Close" - hide Filters sidebar
+
+end
+
+
+deactivate Client
+
+
+@enduml
