@@ -3,6 +3,7 @@ import { Line } from 'react-chartjs-2';
 import { chartOptions1, chartOptions2, chartData, DatasetsMap } from './utils/chart';
 import { MISSION_INDEXES, MISSIONS, SEASONS } from './utils/data';
 import './styles.scss';
+import { buildGradient } from './utils/ui';
 
 const CONTAINER_PADDING = 100;
 
@@ -16,6 +17,7 @@ function App() {
   });
   const [showAllDays, setShowAllDays] = useState(false);
   const [missionPositions, setMissionPositions] = useState({});
+  const [gradientWidth, setGradientWidth] = useState(0);
   const chart = useRef(null);
 
   useEffect(() => {
@@ -24,18 +26,32 @@ function App() {
   }, [showAllDays]);
 
   const positionLabels = useCallback(() => {
-    const precipitationItem = chart.current.chartInstance.getDatasetMeta(DatasetsMap.precipitation).data[0];
-    const tempItem = chart.current.chartInstance.getDatasetMeta(DatasetsMap.temperature).data[0];
+    const precipitationItem =
+      chart.current.chartInstance.getDatasetMeta(DatasetsMap.precipitation).data[0] ||
+      chartLabelsPosition[DatasetsMap.precipitation];
+    const tempItem =
+      chart.current.chartInstance.getDatasetMeta(DatasetsMap.temperature).data[0] ||
+      chartLabelsPosition[DatasetsMap.temperature];
+    const ndviData = chart.current.chartInstance.getDatasetMeta(DatasetsMap.ndvi).data;
+    const ndviItemFirst = ndviData[0] || chartLabelsPosition[DatasetsMap.ndvi];
+    const ndviItemLast = ndviData[ndviData.length - 1];
 
+    console.log(ndviItemLast);
+
+    setGradientWidth(ndviItemLast ? ndviItemLast._model.x : 0);
     setChartLabelsPosition((prevState) => ({
       ...prevState,
       [DatasetsMap.precipitation]: {
-        x: precipitationItem._model.x,
-        y: precipitationItem._model.y,
+        x: precipitationItem._model ? precipitationItem._model.x : precipitationItem.x,
+        y: precipitationItem._model ? precipitationItem._model.y : precipitationItem.y,
       },
       [DatasetsMap.temperature]: {
-        x: tempItem._model.x,
-        y: tempItem._model.y,
+        x: tempItem._model ? tempItem._model.x : tempItem.x,
+        y: tempItem._model ? tempItem._model.y : tempItem.y,
+      },
+      [DatasetsMap.ndvi]: {
+        x: ndviItemFirst._model ? ndviItemFirst._model.x : ndviItemFirst.x,
+        y: ndviItemFirst._model ? ndviItemFirst._model.y : ndviItemFirst.y,
       },
     }));
   }, []);
@@ -62,6 +78,9 @@ function App() {
   const plantingSeasonWidth = CONTAINER_PADDING + firstPointX;
   const earlySeasonWidth = (missionPositions[3] || 0) - firstPointX;
   const midSeasonWidth = (missionPositions[5] || 0) - earlySeasonWidth - firstPointX;
+  const gradientStyles = buildGradient(chartData, MISSION_INDEXES);
+
+  console.log(gradientStyles);
 
   return (
     <>
@@ -85,14 +104,24 @@ function App() {
             <span className="temperature" style={{ top: chartLabelsPosition[DatasetsMap.temperature].y }}>
               Temperature
             </span>
-            {false && (
-              <span className="ndvi" style={{ top: chartLabelsPosition[DatasetsMap.ndvi].y }}>
-                NDVI
-              </span>
-            )}
+            <span className="ndvi" style={{ top: chartLabelsPosition[DatasetsMap.ndvi].y }}>
+              NDVI
+            </span>
           </div>
-          <div>
-            <Line type="line" redraw ref={chart} data={chartData} options={options} width={chartWidth} height={240} />
+          <div className="chart">
+            <Line
+              type="line"
+              redraw
+              ref={chart}
+              data={chartData}
+              options={options}
+              width={chartWidth}
+              height={240}
+              getElementAtEvent={(elements) => {
+                alert(`Selected element index: ${elements[0]._index}`);
+              }}
+            />
+            <div className="chart-point-hover" id="chartjs-tooltip" />
           </div>
         </div>
         <div className="seasons-container">
@@ -107,6 +136,12 @@ function App() {
           </div>
           <div className="season">{SEASONS[3].name}</div>
           <div className="season last static">{SEASONS[SEASONS.length - 1].name}</div>
+          {!!gradientWidth && (
+            <div
+              className="gradient"
+              style={{ left: plantingSeasonWidth, width: gradientWidth - firstPointX, background: gradientStyles }}
+            />
+          )}
         </div>
       </div>
     </>

@@ -21,6 +21,10 @@ body {
   top: 0;
   bottom: 0;
 
+  &.inactive {
+    opacity: 0.5;
+  }
+
   &-header {
     position: relative;
     background: #000;
@@ -75,14 +79,51 @@ body {
       transform: translateY(-50%);
     }
   }
+
+  &-point-hover {
+    opacity: 0;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: #000;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+
+    &:after, &:before {
+      content: '';
+      background-color: #fff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &:before {
+      width: 3px;
+      height: 60%;
+    }
+
+    &:after {
+      width: 60%;
+      height: 3px;
+    }
+  }
 }
 
 .seasons {
   &-container {
+    background-color: rgba(0, 0, 0, 0.2);
     position: relative;
     display: flex;
     flex-direction: row;
     margin: 0px -100px;
+
+    .gradient {
+      position: absolute;
+      height: 100%;
+    }
 
     .season {
       //position: absolute;
@@ -95,6 +136,7 @@ body {
       justify-content: center;
       border-left: 1px solid #000;
       box-sizing: border-box;
+      z-index: 5;
 
       &.static {
         position: relative;
@@ -102,24 +144,24 @@ body {
       }
 
       &:nth-child(1) {
-        background: rgba(0, 0, 0, 0.5);
+        //background: rgba(50, 0, 50, 0.5);
       }
 
       &:nth-child(2) {
-        background: rgba(0, 250, 0, 0.5);
+        //background: rgba(0, 250, 0, 0.5);
       }
 
       &:nth-child(3) {
-        background: rgba(250, 260, 0, 0.5);
+        //background: rgba(250, 260, 0, 0.5);
       }
 
       &:nth-child(4) {
-        background: rgba(250, 0, 260, 0.5);
+        //background: rgba(250, 0, 260, 0.5);
         flex: 1;
       }
 
       &.last {
-        background: rgba(100, 40, 0, 0.5);
+        //background: rgba(100, 40, 0, 0.5);
         left: auto;
         right: 0;
       }

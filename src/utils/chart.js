@@ -1,4 +1,4 @@
-import { dates, precipitation, temperature, mock, convertTickDate } from './data';
+import { dates, precipitation, temperature, mock, convertTickDate, ndvi } from './data';
 
 export const DatasetsMap = {
   precipitation: 0,
@@ -7,42 +7,67 @@ export const DatasetsMap = {
   mock: 3,
 };
 
+const lineStyles = {
+  fill: false,
+  type: 'line',
+  borderWidth: 2,
+  pointHitRadius: 10,
+  pointRadius: 0,
+  pointBorderWidth: 0,
+  pointHoverRadius: 0,
+  pointBackgroundColor: '#000',
+  pointBorderColor: '#000',
+};
+
 export const chartData = {
   labels: dates,
   datasets: [
     {
       borderColor: 'skyblue',
       data: precipitation,
-      fill: false,
-      type: 'line',
       yAxisID: 'yAxisPrecipitation',
+      ...lineStyles,
     },
     {
       borderColor: 'orange',
       data: temperature,
-      fill: false,
-      type: 'line',
       yAxisID: 'yAxisTemperature',
+      ...lineStyles,
     },
     {
       borderColor: 'grey',
-      data: [],
-      fill: false,
-      type: 'line',
+      data: ndvi,
       yAxisID: 'yAxisNDVI',
       spanGaps: true,
+      ...lineStyles,
     },
     {
       borderColor: 'red',
       data: mock,
-      fill: false,
-      type: 'line',
       showLine: false,
-      pointRadius: 0,
+      ...lineStyles,
       pointHitRadius: 0,
       pointHoverRadius: 0,
     },
   ],
+};
+
+const tooltipOptions = {
+  enabled: false,
+  custom(tooltipModel) {
+    const tooltipEl = document.getElementById('chartjs-tooltip');
+
+    // Hide if no tooltip
+    if (tooltipModel.opacity === 0) {
+      tooltipEl.style.opacity = '0';
+      return;
+    }
+
+    // Display, position, and set styles for font
+    tooltipEl.style.opacity = '1';
+    tooltipEl.style.left = tooltipModel.caretX + 'px';
+    tooltipEl.style.top = tooltipModel.caretY + 'px';
+  },
 };
 
 export const chartOptions1 = {
@@ -65,6 +90,7 @@ export const chartOptions1 = {
     display: false,
     drawOnChartArea: false,
   },
+  tooltips: tooltipOptions,
   scales: {
     yAxes: [
       {
@@ -150,6 +176,7 @@ export const chartOptions2 = {
     display: false,
     drawOnChartArea: false,
   },
+  tooltips: tooltipOptions,
   scales: {
     yAxes: [
       {
