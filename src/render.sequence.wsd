@@ -8,16 +8,23 @@ Client -> Client: go to FLC page
 Client -> Server: request Weather, Insights by field, Plans, Crops, etc
 Client -> Client: show Loading Indicator
 Server -> Client: response Weather, Insights,  Threats, Plans, Crops, etc.
+deactivate Server
 Client -> Client: prepare data for render inside selector
 Client -> Client: render Charts with dates
 Client -> Client: search coordinates of points at chart that have Missions
 Client -> Client: align Missions and Timeline with correct dates
 Client -> Client: hide Loading Indicator and render the Page
-deactivate Server
+
 
 == Insight bubbles events ==
 Client -> Client: click on Insight bubble (at mission)
 Client -> Client: show Insight sidebar
+activate Server
+Client -> Server: request all needed data as on Single Insight view
+Client -> Client: show Loading Indicator inside sidebar
+Server -> Client: response with Threats, Thumbnails, etc
+deactivate Server
+Client -> Client: hide Loading Indicator inside sidebar and render sections - Threats, Thumbnails. etc
 alt Insight sidebar actions
     Client -> Client: Click Sample Image - opens Image modal view with tags as on Single Insight view
     Client -> Client: "Open insight" - go to Insight single view page
